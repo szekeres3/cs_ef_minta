@@ -1,0 +1,73 @@
+-- database: ./jurassicDb.sqlite
+
+PRAGMA ignore_check_constraints = OFF;
+
+DROP TABLE IF EXISTS `dinosaurs`;
+DROP TABLE IF EXISTS `species`;
+DROP TABLE IF EXISTS `location_dinosaur`;
+DROP TABLE IF EXISTS `locations`;
+
+CREATE TABLE `species` (
+    `id`    INTEGER  PRIMARY KEY,                         -- faj azonosito
+    `name`  TEXT     NOT NULL  CHECK(length(`name`) > 0)  -- faj megnevezes
+);
+
+CREATE TABLE `dinosaurs` (
+    `id`          INTEGER  PRIMARY KEY,                                                            -- dinoszaurusz azonosito
+    `nickname`    TEXT     UNIQUE,                                                                 -- dinoszaurusz egyed becenev
+    `birth`       TEXT     NOT NULL      CHECK(`birth` IS strftime('%Y-%m-%d', `birth`)),          -- dinoszaurusz letrehozas datum
+    `weight`      REAL     NOT NULL      CHECK(`weight` > 0),                                      -- dinoszaurusz suly
+    `height`      REAL     NOT NULL      CHECK(`height` > 0),                                      -- dinoszaurusz magassag
+    `length`      REAL     NOT NULL      CHECK(`length` > 0),                                      -- dinoszaurusz hossz 
+    `version`     TEXT     DEFAULT '??'  CHECK(`version` GLOB '[0-9].[0-9]' OR `version` = '??'),  -- dinoszaurusz dns verzio
+    `species_id`  INTEGER,                                                                         -- dinoszaurusz faj idegen kulcs
+    FOREIGN KEY(`species_id`) REFERENCES `species`(`id`)                                           -- idegen kulcs megszoritas
+);
+
+CREATE TABLE `locations` (
+    `id`    INTEGER  PRIMARY KEY,                         -- helyszin azonosito
+    `name`  TEXT     NOT NULL  CHECK(length(`name`) > 0)  -- helyszin megnevezes
+);
+
+CREATE TABLE `location_dinosaur` (
+    `id`           INTEGER  PRIMARY KEY, 
+    `location_id`  INTEGER,                                   -- kapcsolo tabla, idegen kulcs 1
+    `dinosaur_id`  INTEGER,                                   -- kapcsolo tabla, idegen kulcs 2
+    `created_at`   TEXT  NOT NULL,                            -- dinoszaurusz eszleles datum
+    FOREIGN KEY(`location_id`) REFERENCES `locations`(`id`),  -- idegen kulcs megszoritas
+    FOREIGN KEY(`dinosaur_id`) REFERENCES `dinosaurs`(`id`)   -- idegen kulcs megszoritas
+);
+
+/* */
+INSERT INTO `species` (`id`, `name`)
+VALUES
+    (1, 'Tyrannosaurs'),
+    (2, 'Velociraptors'),
+    (3, 'Maiasaurs'),
+    (4, 'Stegosaurs'),
+    (5, 'Triceratops');
+
+INSERT INTO `locations` (`id`, `name`)
+VALUES
+    (1, 'Dock'),
+    (2, 'Trex Paddock'),
+    (3, 'Visitor''s center');
+
+-- T-rex
+INSERT INTO `dinosaurs` (`nickname`, `birth`, `weight`, `height`, `length`, `version`, `species_id`)
+VALUES
+    ('Rexy', '1980-01-01', '9800', '3.66', '14.3', '4.1', 1),
+    ('Junior', '1982-01-01', '3200', '1.2', '4.1', '4.1', 1);
+
+-- Raptors
+INSERT INTO `dinosaurs` (`birth`, `weight`, `height`, `length`, `species_id`)
+VALUES
+    (date('now'), abs(random() % (13 - 7) + 7), abs(random() % (1.83 - 0.5) + 0.5),  abs(random() % (2.7 - 1.5) + 1.5), 2),
+    (date('now'), abs(random() % (13 - 7) + 7), abs(random() % (1.83 - 0.5) + 0.5),  abs(random() % (2.7 - 1.5) + 1.5), 2),
+    (date('now'), abs(random() % (13 - 7) + 7), abs(random() % (1.83 - 0.5) + 0.5),  abs(random() % (2.7 - 1.5) + 1.5), 2),
+    (date('now'), abs(random() % (13 - 7) + 7), abs(random() % (1.83 - 0.5) + 0.5),  abs(random() % (2.7 - 1.5) + 1.5), 2),
+    (date('now'), abs(random() % (13 - 7) + 7), abs(random() % (1.83 - 0.5) + 0.5),  abs(random() % (2.7 - 1.5) + 1.5), 2),
+    (date('now'), abs(random() % (13 - 7) + 7), abs(random() % (1.83 - 0.5) + 0.5),  abs(random() % (2.7 - 1.5) + 1.5), 2),
+    (date('now'), abs(random() % (13 - 7) + 7), abs(random() % (1.83 - 0.5) + 0.5),  abs(random() % (2.7 - 1.5) + 1.5), 2),
+    (date('now'), abs(random() % (13 - 7) + 7), abs(random() % (1.83 - 0.5) + 0.5),  abs(random() % (2.7 - 1.5) + 1.5), 2);
+/* */
